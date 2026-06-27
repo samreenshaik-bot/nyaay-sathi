@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Nyay Saathi — A VerdictAI Feature</title>
+<style>
+  :root {
+    --navy: #0f2847; --navy-mid: #14365e; --gold: #c89b3c; --gold-light: #e8c878;
+    --ink: #1a1a1a; --ink-soft: #555; --paper: #fafaf8; --line: #e3e0d8; --green: #1a9e5c;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Georgia, 'Times New Roman', serif; background: var(--paper); color: var(--ink); line-height: 1.6; }
+  .sans { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; }
+  .gov-ribbon { background: var(--navy); color: #cfe0f5; font-size: 11.5px; text-align: center; padding: 6px 0; font-family: -apple-system, sans-serif; letter-spacing: 0.3px; }
+  nav { background: white; border-bottom: 1px solid var(--line); padding: 16px 40px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+  .nav-brand { display: flex; align-items: center; gap: 10px; }
+  .nav-logo { width: 36px; height: 36px; border-radius: 8px; background: var(--navy); display: flex; align-items: center; justify-content: center; color: var(--gold-light); font-size: 18px; font-weight: 700; }
+  .nav-title { font-size: 17px; font-weight: 700; color: var(--navy); }
+  .nav-title .sub { font-size: 11px; color: var(--ink-soft); font-family: -apple-system, sans-serif; display: block; margin-top: 1px; }
+  .nav-links { display: flex; gap: 24px; align-items: center; font-family: -apple-system, sans-serif; flex-wrap: wrap; }
+  .nav-links a { color: var(--ink-soft); text-decoration: none; font-size: 13.5px; cursor: pointer; }
+  .nav-links a:hover { color: var(--navy); }
+  .nav-cta { background: var(--navy); color: white; padding: 9px 18px; border-radius: 6px; font-size: 13px; font-family: -apple-system, sans-serif; font-weight: 600; text-decoration: none; cursor: pointer; }
+  .hero { background: linear-gradient(180deg, var(--navy) 0%, var(--navy-mid) 100%); color: white; padding: 64px 24px 56px; text-align: center; }
+  .hero-badge { display: inline-block; background: rgba(200,155,60,0.15); border: 1px solid var(--gold); color: var(--gold-light); font-size: 12px; padding: 5px 14px; border-radius: 20px; margin-bottom: 22px; font-family: -apple-system, sans-serif; letter-spacing: 0.4px; }
+  .hero h1 { font-size: 38px; font-weight: 400; line-height: 1.25; max-width: 720px; margin: 0 auto 14px; }
+  .hero h1 .hindi { color: var(--gold-light); font-size: 28px; display: block; margin-top: 6px; }
+  .hero p { font-size: 16px; color: #c9d6e8; max-width: 560px; margin: 0 auto 32px; font-family: -apple-system, sans-serif; }
+  .hero-ctas { display: flex; gap: 14px; justify-content: center; font-family: -apple-system, sans-serif; flex-wrap: wrap; }
+  .btn-gold { background: var(--gold); color: var(--navy); padding: 13px 26px; border-radius: 6px; font-size: 14px; font-weight: 700; text-decoration: none; cursor: pointer; border: none; }
+  .btn-outline { background: transparent; color: white; padding: 13px 26px; border-radius: 6px; font-size: 14px; font-weight: 600; border: 1px solid rgba(255,255,255,0.4); text-decoration: none; cursor: pointer; }
+  .stats-strip { background: white; border-bottom: 1px solid var(--line); display: flex; justify-content: center; padding: 36px 24px; font-family: -apple-system, sans-serif; flex-wrap: wrap; }
+  .stats-strip .stat { text-align: center; padding: 0 28px; border-right: 1px solid var(--line); }
+  .stats-strip .stat:last-child { border-right: none; }
+  .stat-num { font-size: 28px; font-weight: 700; color: var(--navy); }
+  .stat-label { font-size: 12px; color: var(--ink-soft); margin-top: 4px; max-width: 140px; }
+  section { padding: 56px 24px; max-width: 1100px; margin: 0 auto; }
+  .section-label { font-family: -apple-system, sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--gold); margin-bottom: 10px; text-align: center; }
+  .section-title { font-size: 26px; font-weight: 400; text-align: center; margin-bottom: 14px; color: var(--navy); }
+  .section-sub { font-family: -apple-system, sans-serif; font-size: 14px; color: var(--ink-soft); text-align: center; max-width: 600px; margin: 0 auto 40px; }
+  .flow-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
+  @media (max-width: 900px) { .flow-grid { grid-template-columns: 1fr 1fr; } }
+  .flow-card { background: white; border: 1px solid var(--line); border-radius: 10px; padding: 20px 16px; font-family: -apple-system, sans-serif; }
+  .flow-num { width: 26px; height: 26px; border-radius: 50%; background: var(--navy); color: white; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; margin-bottom: 10px; }
+  .flow-card h4 { font-size: 13.5px; font-weight: 700; margin-bottom: 6px; color: var(--navy); }
+  .flow-card p { font-size: 12px; color: var(--ink-soft); line-height: 1.5; }
+  .split { display: grid; grid-template-columns: 1fr 1fr; gap: 36px; align-items: center; }
+  @media (max-width: 800px) { .split { grid-template-columns: 1fr; } }
+  .feature-list { font-family: -apple-system, sans-serif; }
+  .feature-item { display: flex; gap: 14px; margin-bottom: 20px; }
+  .feature-icon { width: 36px; height: 36px; border-radius: 8px; background: rgba(200,155,60,0.12); color: var(--gold); display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+  .feature-item h4 { font-size: 14px; font-weight: 700; color: var(--navy); margin-bottom: 3px; }
+  .feature-item p { font-size: 12.5px; color: var(--ink-soft); line-height: 1.5; }
+  .mock-frame { background: white; border: 1px solid var(--line); border-radius: 12px; padding: 16px; }
+  .mock-header { display: flex; align-items: center; gap: 8px; padding-bottom: 12px; border-bottom: 1px solid var(--line); margin-bottom: 12px; }
+  .mock-dot { width: 9px; height: 9px; border-radius: 50%; }
+  .mock-chat-bubble { background: #e9f4e4; border-radius: 8px; padding: 10px 13px; font-size: 12.5px; font-family: -apple-system, sans-serif; color: #1a1a1a; margin-bottom: 8px; max-width: 92%; }
+  .cta-band { background: var(--navy); color: white; text-align: center; padding: 56px 24px; }
+  .cta-band h2 { font-size: 24px; font-weight: 400; margin-bottom: 12px; }
+  .cta-band p { font-family: -apple-system, sans-serif; color: #c9d6e8; font-size: 14px; margin-bottom: 26px; }
+  footer { background: #fff; border-top: 1px solid var(--line); padding: 28px 24px; text-align: center; font-family: -apple-system, sans-serif; font-size: 12px; color: var(--ink-soft); }
+  footer .motto { font-family: Georgia, serif; font-style: italic; color: var(--navy); font-size: 13px; margin-bottom: 6px; }
+</style>
+</head>
+<body>
+
+<div class="gov-ribbon">VerdictAI Platform &nbsp;·&nbsp; Verified Feature Module &nbsp;·&nbsp; सत्यमेव जयते</div>
+
+<nav>
+  <div class="nav-brand">
+    <div class="nav-logo">&#9878;</div>
+    <div class="nav-title">VerdictAI<span class="sub">Nyay Saathi Module</span></div>
+  </div>
+  <div class="nav-links">
+    <a onclick="location.href='app.html'">Family Portal</a>
+    <a onclick="location.href='app.html'">Advocate Dashboard</a>
+    <a href="#how-it-works">How it works</a>
+    <a href="#impact">Impact</a>
+  </div>
+  <a class="nav-cta" onclick="location.href='app.html'">Open the App &rarr;</a>
+</nav>
+
+<div class="hero">
+  <div class="hero-badge">AI-POWERED &middot; BUILT ON VERDICTAI</div>
+  <h1>Justice, delivered intelligently<span class="hindi">&mdash; for the families who need it most</span></h1>
+  <p>Nyay Saathi keeps undertrial families informed of every hearing date change, in their own language, over WhatsApp &mdash; automatically.</p>
+  <div class="hero-ctas">
+    <a class="btn-gold" onclick="location.href='app.html'">Try the Family Portal</a>
+    <a class="btn-outline" onclick="location.href='app.html'">View Advocate Dashboard</a>
+  </div>
+</div>
+
+<div class="stats-strip">
+  <div class="stat"><div class="stat-num">4.3L</div><div class="stat-label">Undertrials in Indian jails</div></div>
+  <div class="stat"><div class="stat-num">76%</div><div class="stat-label">Of prison population awaiting trial</div></div>
+  <div class="stat"><div class="stat-num">0</div><div class="stat-label">Families notified today &mdash; until now</div></div>
+</div>
+
+<section id="how-it-works">
+  <div class="section-label">How it works</div>
+  <div class="section-title">Four steps, every single night</div>
+  <div class="section-sub">Nyay Saathi runs quietly in the background of VerdictAI's case management, watching for anything that changes.</div>
+  <div class="flow-grid">
+    <div class="flow-card"><div class="flow-num">1</div><h4>Fetch eCourts data</h4><p>Every tracked case is checked nightly against the public eCourts case status record.</p></div>
+    <div class="flow-card"><div class="flow-num">2</div><h4>Compare to last known state</h4><p>Any change in hearing date, stage, or new order is detected automatically.</p></div>
+    <div class="flow-card"><div class="flow-num">3</div><h4>AI plain-language translation</h4><p>Legal English is rewritten into warm, clear text in the family's own language.</p></div>
+    <div class="flow-card"><div class="flow-num">4</div><h4>WhatsApp delivery</h4><p>The family receives the update directly &mdash; no app to install, no portal to check.</p></div>
+  </div>
+</section>
+
+<section>
+  <div class="split">
+    <div class="feature-list">
+      <div class="section-label" style="text-align:left;">For families</div>
+      <div class="feature-item"><div class="feature-icon">&#128197;</div><div><h4>Never miss a hearing date</h4><p>Instant alerts when a date changes &mdash; no more wasted journeys to court.</p></div></div>
+      <div class="feature-item"><div class="feature-icon">&#128483;</div><div><h4>In your own language</h4><p>Hindi, Tamil, Telugu, Bengali, Marathi &mdash; plain words, not legal jargon.</p></div></div>
+      <div class="feature-item"><div class="feature-icon">&#128203;</div><div><h4>Know exactly what to bring</h4><p>A document checklist tailored to each hearing type, explained simply.</p></div></div>
+    </div>
+    <div class="mock-frame">
+      <div class="mock-header">
+        <div class="mock-dot" style="background:#e0494c;"></div>
+        <div class="mock-dot" style="background:#d9a534;"></div>
+        <div class="mock-dot" style="background:#1a9e5c;"></div>
+        <span style="font-size:11px; color:var(--ink-soft); font-family: -apple-system, sans-serif; margin-left:6px;">Nyay Saathi &mdash; WhatsApp</span>
+      </div>
+      <div class="mock-chat-bubble">नमस्ते। आपके मामले में अपडेट है। अगली सुनवाई 19 जून को बेल रिव्यू के लिए है। ज़मानत के कागज़ात साथ लाएं। &mdash; न्याय साथी</div>
+      <div class="mock-chat-bubble" style="background:#f5f0e0;">&#128203; Bring: surety's ID proof, property papers, last court order copy</div>
+    </div>
+  </div>
+</section>
+
+<section id="impact">
+  <div class="split">
+    <div class="mock-frame">
+      <div class="mock-header"><span style="font-size:11px; color:var(--ink-soft); font-family: -apple-system, sans-serif;">Advocate Dashboard &mdash; Adv. Sunita Rao</span></div>
+      <div style="display:flex; gap:10px; margin-bottom:10px;">
+        <div style="flex:1; background:#f5f3ee; border-radius:8px; padding:10px; text-align:center; font-family:-apple-system, sans-serif;"><div style="font-size:18px; font-weight:700; color:var(--navy);">2</div><div style="font-size:10px; color:var(--ink-soft);">Cases tracked</div></div>
+        <div style="flex:1; background:#f5f3ee; border-radius:8px; padding:10px; text-align:center; font-family:-apple-system, sans-serif;"><div style="font-size:18px; font-weight:700; color:var(--navy);">2</div><div style="font-size:10px; color:var(--ink-soft);">Families subscribed</div></div>
+        <div style="flex:1; background:#f5f3ee; border-radius:8px; padding:10px; text-align:center; font-family:-apple-system, sans-serif;"><div style="font-size:18px; font-weight:700; color:var(--navy);">5</div><div style="font-size:10px; color:var(--ink-soft);">Alerts sent</div></div>
+      </div>
+      <div style="font-size:11.5px; color:var(--ink-soft); font-family:-apple-system, sans-serif; padding:8px; background:#fafaf8; border-radius:6px;">Full audit trail of every family notification &mdash; for your records and for the families you serve.</div>
+    </div>
+    <div class="feature-list">
+      <div class="section-label" style="text-align:left;">For advocates</div>
+      <div class="feature-item"><div class="feature-icon">&#9878;</div><div><h4>Every case, one dashboard</h4><p>See which families are tracking which cases, and how informed they are.</p></div></div>
+      <div class="feature-item"><div class="feature-icon">&#128202;</div><div><h4>Complete audit trail</h4><p>Every notification logged &mdash; when it was sent, in what language, to whom.</p></div></div>
+      <div class="feature-item"><div class="feature-icon">&#129309;</div><div><h4>Stronger client trust</h4><p>Families who feel informed trust their advocate more &mdash; and refer others.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<div class="cta-band">
+  <h2>See it for yourself</h2>
+  <p>Open the live demo &mdash; register a case, simulate a court update, and watch the alert arrive in seconds.</p>
+  <a class="btn-gold" onclick="location.href='app.html'">Launch Nyay Saathi &rarr;</a>
+</div>
+
+<footer>
+  <div class="motto">"Fiat Justitia Ruat Caelum &mdash; Let Justice Be Done Though the Heavens Fall"</div>
+  <div>Nyay Saathi is a feature module built on the VerdictAI legal platform. Demo build for hackathon submission.</div>
+</footer>
+
+</body>
+</html>

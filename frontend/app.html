@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Nyay Saathi — Live Demo | VerdictAI</title>
+<style>
+  :root {
+    --navy: #0f2847; --navy-mid: #14365e; --navy-light: #1a3c6e;
+    --gold: #c89b3c; --gold-light: #e8c878; --gold-bg: rgba(200,155,60,0.1);
+    --paper: #fafaf8; --card-bg: #ffffff; --line: #e3e0d8;
+    --ink: #1a1a1a; --ink-soft: #5a5a55; --ink-faint: #8a8a82;
+    --green: #1a9e5c; --green-bg: rgba(26,158,92,0.1);
+    --red: #c0494c; --red-bg: rgba(192,73,76,0.08);
+    --accent: #14365e;
+    --whatsapp-bg: #e9f4e4; --whatsapp-bubble: #dcf8c6;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; background: var(--paper); color: var(--ink); }
+  .serif { font-family: Georgia, 'Times New Roman', serif; }
+
+  .gov-ribbon { background: var(--navy); color: #cfe0f5; font-size: 11px; text-align: center; padding: 5px 0; }
+
+  header { background: white; border-bottom: 1px solid var(--line); padding: 14px 28px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+  .brand { display: flex; align-items: center; gap: 10px; }
+  .brand-icon { width: 36px; height: 36px; border-radius: 8px; background: var(--navy); display: flex; align-items: center; justify-content: center; color: var(--gold-light); font-size: 17px; font-weight: 700; }
+  .brand-title { font-size: 16px; font-weight: 700; color: var(--navy); font-family: Georgia, serif; }
+  .brand-title .hindi { color: var(--gold); font-weight: 400; margin-left: 4px; }
+  .brand-sub { font-size: 10.5px; color: var(--ink-soft); margin-top: 1px; }
+  .back-link { font-size: 12.5px; color: var(--ink-soft); text-decoration: none; cursor: pointer; }
+  .back-link:hover { color: var(--navy); }
+
+  .view-toggle { display: flex; gap: 4px; background: #f0eee6; border: 1px solid var(--line); border-radius: 10px; padding: 3px; }
+  .view-tab { background: transparent; border: none; color: var(--ink-soft); padding: 7px 14px; border-radius: 7px; font-size: 12.5px; cursor: pointer; font-weight: 600; }
+  .view-tab.active { background: var(--navy); color: white; }
+
+  .server-pill { display: flex; align-items: center; gap: 6px; font-size: 11.5px; padding: 6px 12px; border-radius: 20px; border: 1px solid var(--line); }
+  .server-pill.online { color: #14663f; background: var(--green-bg); border-color: var(--green); }
+  .server-pill.offline { color: #8c2c2e; background: var(--red-bg); border-color: var(--red); }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); }
+  .dot.offline { background: var(--red); }
+
+  main { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; padding: 22px 28px 60px; max-width: 1320px; margin: 0 auto; }
+  @media (max-width: 980px) { main { grid-template-columns: 1fr; } }
+  .left-column, .right-column { display: flex; flex-direction: column; gap: 16px; }
+
+  .card { background: var(--card-bg); border: 1px solid var(--line); border-radius: 12px; padding: 18px 20px; }
+  .section-title { font-size: 12px; font-weight: 700; letter-spacing: 0.4px; text-transform: uppercase; color: var(--navy); margin-bottom: 14px; display: flex; align-items: center; gap: 6px; }
+  .section-title.gold { color: var(--gold); }
+
+  .impact-banner { background: linear-gradient(135deg, var(--navy), var(--navy-mid)); color: white; border-radius: 12px; padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+  .impact-banner .num { font-size: 26px; font-weight: 700; color: var(--gold-light); }
+  .impact-banner .label { font-size: 11px; color: #c9d6e8; }
+  .impact-banner .desc { font-size: 12px; color: #c9d6e8; max-width: 320px; }
+
+  .case-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+  @media (max-width: 600px) { .case-grid { grid-template-columns: 1fr; } }
+  .case-card { border: 1px solid var(--line); border-radius: 9px; padding: 11px; cursor: pointer; transition: border-color 0.15s; }
+  .case-card:hover { border-color: var(--gold); }
+  .case-card.active { border-color: var(--gold); background: var(--gold-bg); }
+  .case-cnr { font-size: 9.5px; font-weight: 700; color: var(--gold); font-family: monospace; }
+  .case-name { font-size: 13.5px; font-weight: 700; margin: 3px 0 2px; color: var(--navy); }
+  .case-meta { font-size: 10.5px; color: var(--ink-soft); }
+
+  label.field-label { font-size: 10px; font-weight: 700; letter-spacing: 0.3px; text-transform: uppercase; color: var(--ink-soft); display: block; margin-bottom: 5px; }
+  .form-row { display: grid; grid-template-columns: 1.3fr 1.3fr 1fr; gap: 12px; margin-bottom: 14px; }
+  @media (max-width: 600px) { .form-row { grid-template-columns: 1fr; } }
+  input, select { width: 100%; padding: 9px 10px; font-size: 13px; border-radius: 7px; border: 1px solid #d4d0c4; background: #fff; color: var(--ink); }
+  button { font-size: 13px; font-weight: 700; border: none; border-radius: 7px; padding: 10px 16px; cursor: pointer; font-family: inherit; }
+  button:disabled { opacity: 0.5; cursor: not-allowed; }
+  button.primary { background: var(--navy); color: white; }
+  button.gold { background: var(--gold); color: var(--navy); }
+  button.secondary { background: #f0eee6; color: var(--navy); border: 1px solid var(--line); }
+
+  .status-line { font-size: 12px; margin-top: 10px; font-family: monospace; }
+  .status-line.ok { color: var(--green); }
+  .status-line.error { color: var(--red); }
+
+  .pipeline-grid { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+  @media (max-width: 600px) { .pipeline-grid { grid-template-columns: 1fr 1fr; } }
+  .pipe-step { border: 1px solid var(--line); border-radius: 8px; padding: 10px 6px; text-align: center; font-size: 10.5px; color: var(--ink-soft); }
+  .pipe-step .num { width: 20px; height: 20px; border-radius: 50%; background: #f0eee6; display: flex; align-items: center; justify-content: center; margin: 0 auto 6px; font-size: 11px; font-weight: 700; color: var(--ink-soft); }
+  .pipe-step.active { border-color: var(--navy); }
+  .pipe-step.active .num { background: var(--navy); color: white; }
+  .pipe-step.done { border-color: var(--green); }
+  .pipe-step.done .num { background: var(--green); color: white; }
+
+  .action-row { display: flex; gap: 10px; flex-wrap: wrap; }
+  .alert-container { margin-top: 14px; border: 1px dashed var(--gold); border-radius: 8px; padding: 12px; background: var(--gold-bg); display: none; }
+  .alert-container .title { font-size: 11px; font-weight: 700; color: #8a6a1f; text-transform: uppercase; margin-bottom: 8px; }
+  .alert-container ul { margin: 0; padding-left: 18px; font-size: 13px; }
+
+  .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+  .info-box .k { font-size: 9.5px; color: var(--ink-faint); text-transform: uppercase; }
+  .info-box .v { font-size: 13.5px; font-weight: 700; margin-top: 2px; color: var(--navy); }
+  .timeline-item { display: flex; gap: 10px; margin-bottom: 12px; }
+  .timeline-dot { width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--gold); margin-top: 4px; flex-shrink: 0; }
+  .timeline-dot.current { background: var(--navy); border-color: var(--navy); }
+  .timeline-label { font-size: 9.5px; color: var(--gold); font-weight: 700; text-transform: uppercase; }
+  .timeline-title { font-size: 12.5px; font-weight: 700; margin: 2px 0; color: var(--navy); }
+  .timeline-desc { font-size: 11.5px; color: var(--ink-soft); }
+
+  .checklist-item { display: flex; gap: 10px; margin-bottom: 11px; align-items: flex-start; }
+  .checklist-icon { width: 21px; height: 21px; border-radius: 50%; background: var(--green-bg); border: 1px solid var(--green); flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 10.5px; color: var(--green); margin-top: 1px; }
+  .checklist-text .item { font-size: 12.5px; font-weight: 700; color: var(--navy); }
+  .checklist-text .reason { font-size: 11px; color: var(--ink-soft); margin-top: 2px; line-height: 1.4; }
+
+  .chat-card { padding: 0; overflow: hidden; }
+  .chat-header { background: var(--navy); padding: 13px 18px; display: flex; align-items: center; gap: 10px; }
+  .chat-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--gold-light); color: var(--navy); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px; }
+  .chat-title { color: white; font-weight: 700; font-size: 13.5px; }
+  .chat-sub { color: #c9d6e8; font-size: 10.5px; }
+  .chat-body { background: var(--whatsapp-bg); min-height: 280px; max-height: 380px; overflow-y: auto; padding: 14px; display: flex; flex-direction: column; gap: 9px; }
+  .chat-date-pill { align-self: center; background: rgba(0,0,0,0.06); color: #555; font-size: 9.5px; padding: 3px 10px; border-radius: 10px; }
+  .chat-bubble { background: white; border-radius: 8px; padding: 9px 12px; max-width: 88%; font-size: 12.5px; color: #1a1a1a; line-height: 1.5; align-self: flex-start; white-space: pre-wrap; }
+  .chat-bubble.out { background: var(--whatsapp-bubble); align-self: flex-end; }
+  .chat-time { font-size: 9.5px; color: #888; text-align: right; margin-top: 4px; }
+  .chat-typing { align-self: flex-start; font-size: 11.5px; color: #777; font-style: italic; }
+  .chat-disclosure { font-size: 9.5px; color: #888; padding: 8px 14px; background: #f3f1ea; border-top: 1px solid #e0ddd2; }
+  .chat-input-row { display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: #f0f0f0; border-top: 1px solid #ddd; }
+  .chat-input-row input { flex: 1; border: none; border-radius: 20px; padding: 9px 14px; font-size: 12.5px; background: white; color: #333; }
+
+  .compare-toggle { display: flex; align-items: center; gap: 8px; font-size: 11.5px; color: var(--ink-soft); margin-bottom: 10px; cursor: pointer; }
+  .compare-box { display: none; margin-top: 10px; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+  .compare-box.visible { display: block; }
+  .compare-row { display: grid; grid-template-columns: 1fr 1fr; }
+  @media (max-width: 600px) { .compare-row { grid-template-columns: 1fr; } }
+  .compare-col { padding: 12px; font-size: 11.5px; }
+  .compare-col.raw { background: #f7f6f1; color: var(--ink-soft); border-right: 1px solid var(--line); font-family: monospace; }
+  .compare-col.ai { background: var(--green-bg); color: var(--ink); }
+  .compare-label { font-size: 9.5px; font-weight: 700; text-transform: uppercase; margin-bottom: 6px; display: block; }
+  .compare-label.raw-label { color: var(--ink-faint); }
+  .compare-label.ai-label { color: var(--green); }
+
+  .adv-stats-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-bottom: 18px; }
+  .adv-stat-box { background: var(--card-bg); border: 1px solid var(--line); border-radius: 12px; padding: 18px; text-align: center; }
+  .adv-stat-num { font-size: 26px; font-weight: 700; color: var(--navy); }
+  .adv-stat-label { font-size: 10.5px; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.3px; margin-top: 4px; }
+  .adv-select-row { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+  .adv-select-row label { font-size: 12px; color: var(--ink-soft); }
+  .adv-select-row select { width: auto; min-width: 220px; }
+  .adv-case-row { display: flex; align-items: center; justify-content: space-between; padding: 11px 13px; border: 1px solid var(--line); border-radius: 9px; margin-bottom: 8px; flex-wrap: wrap; gap: 8px; }
+  .adv-case-info .name { font-size: 13.5px; font-weight: 700; color: var(--navy); }
+  .adv-case-info .meta { font-size: 10.5px; color: var(--ink-soft); margin-top: 2px; }
+  .adv-case-counts { display: flex; gap: 16px; }
+  .adv-count { text-align: center; }
+  .adv-count .n { font-size: 15px; font-weight: 700; color: var(--green); }
+  .adv-count .l { font-size: 9.5px; color: var(--ink-faint); text-transform: uppercase; }
+  .notif-row { display: flex; gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--line); }
+  .notif-row:last-child { border-bottom: none; }
+  .notif-badge { font-size: 8.5px; padding: 2px 7px; border-radius: 10px; text-transform: uppercase; font-weight: 700; flex-shrink: 0; height: fit-content; margin-top: 2px; }
+  .notif-badge.registration { background: rgba(20,54,94,0.1); color: var(--navy); }
+  .notif-badge.change_detected { background: var(--gold-bg); color: #8a6a1f; }
+  .notif-text { font-size: 11.5px; color: var(--ink); }
+  .notif-meta { font-size: 9.5px; color: var(--ink-faint); margin-top: 3px; }
+
+  .ai-disclosure { font-size: 10.5px; color: var(--ink-faint); border-left: 3px solid var(--gold); padding: 7px 12px; margin-top: 12px; background: #fbf8f0; line-height: 1.4; }
+  .footer-note { font-size: 11px; color: var(--ink-faint); font-family: monospace; border-left: 3px solid var(--navy); padding: 8px 14px; margin-top: 6px; }
+</style>
+</head>
+<body>
+
+<div class="gov-ribbon">VerdictAI Platform &middot; Nyay Saathi Live Demo</div>
+
+<header>
+  <div class="brand">
+    <div class="brand-icon">&#9878;</div>
+    <div>
+      <div class="brand-title">Nyay Saathi<span class="hindi">न्याय साथी</span></div>
+      <div class="brand-sub">A VerdictAI Feature &middot; <a class="back-link" onclick="location.href='index.html'">&larr; Back to overview</a></div>
+    </div>
+  </div>
+  <div style="display:flex; align-items:center; gap:14px; flex-wrap: wrap;">
+    <div class="view-toggle">
+      <button class="view-tab active" id="familyTab" onclick="switchView('family')">Family Portal</button>
+      <button class="view-tab" id="advocateTab" onclick="switchView('advocate')">Advocate Dashboard</button>
+    </div>
+    <div class="server-pill" id="serverPill"><div class="dot" id="serverDot"></div><span id="serverText">Checking backend...</span></div>
+  </div>
+</header>
+
+<div id="familyView">
+
+  <div style="max-width:1320px; margin: 18px auto 0; padding: 0 28px;">
+    <div class="impact-banner">
+      <div>
+        <div class="num" id="tripsPreventedNum">0</div>
+        <div class="label">Wasted court trips prevented in this session</div>
+      </div>
+      <div class="desc">Every time a date change is caught before a family would have travelled unnecessarily, this counter increases. Based on average travel cost of &#8377;500&ndash;1,200 per trip for rural families.</div>
+    </div>
+  </div>
+
+  <main>
+    <div class="left-column">
+
+      <div class="card">
+        <div class="section-title gold">&#128193; Select a case to track</div>
+        <div class="case-grid" id="caseGrid">Loading cases...</div>
+      </div>
+
+      <div class="card">
+        <div class="section-title gold">&#128100; Step 1: Family Registration</div>
+        <div class="form-row">
+          <div><label class="field-label">CNR Number</label><input type="text" id="cnrInput" readonly /></div>
+          <div><label class="field-label">WhatsApp Number</label><input type="text" id="phoneInput" value="917093780449" /></div>
+          <div>
+            <label class="field-label">Language</label>
+            <select id="langInput">
+              <option value="hi" selected>Hindi</option>
+              <option value="ta">Tamil</option>
+              <option value="te">Telugu</option>
+              <option value="bn">Bengali</option>
+              <option value="mr">Marathi</option>
+              <option value="en">English</option>
+            </select>
+          </div>
+        </div>
+        <button class="primary" id="registerBtn" onclick="handleRegister()">&check; Register &amp; Send Welcome</button>
+        <div class="status-line" id="regStatus"></div>
+      </div>
+
+      <div class="card">
+        <div class="section-title gold">&#9889; Step 2: Nightly Check Simulator</div>
+        <div class="pipeline-grid" id="pipeline">
+          <div class="pipe-step" data-step="fetch"><div class="num">1</div>Fetch eCourts</div>
+          <div class="pipe-step" data-step="diff"><div class="num">2</div>Compare State</div>
+          <div class="pipe-step" data-step="ai"><div class="num">3</div>AI Translation</div>
+          <div class="pipe-step" data-step="send"><div class="num">4</div>Send WhatsApp</div>
+        </div>
+        <div class="action-row">
+          <button class="secondary" id="simulateBtn" style="flex:1;" onclick="handleSimulate()">&#8635; Simulate Case Change</button>
+          <button class="gold" id="checkBtn" style="flex:1;" onclick="handleCheck()">&#9658; Run Nightly Check Now</button>
+        </div>
+        <div class="status-line" id="checkStatus"></div>
+        <div class="alert-container" id="changesWrap">
+          <div class="title">&#9888; Updates found on eCourts</div>
+          <ul id="changesList"></ul>
+        </div>
+
+        <div class="compare-toggle" onclick="toggleCompare()">
+          <input type="checkbox" id="compareCheckbox" />
+          <span>Show raw legal record vs. AI translation side by side</span>
+        </div>
+        <div class="compare-box" id="compareBox">
+          <div class="compare-row">
+            <div class="compare-col raw">
+              <span class="compare-label raw-label">Raw court record (English)</span>
+              <div id="compareRaw">No comparison yet &mdash; run a check above.</div>
+            </div>
+            <div class="compare-col ai">
+              <span class="compare-label ai-label">AI plain-language translation</span>
+              <div id="compareAi">Waiting...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="right-column">
+      <div class="card">
+        <div class="section-title gold">&#9201; Case Live Status</div>
+        <div class="info-grid">
+          <div class="info-box"><div class="k">Accused Name</div><div class="v" id="caseAccused">-</div></div>
+          <div class="info-box"><div class="k">Court Jurisdiction</div><div class="v" id="caseCourt">-</div></div>
+          <div class="info-box"><div class="k">Hearing Stage</div><div class="v" id="caseStage">-</div></div>
+          <div class="info-box"><div class="k">Next Hearing</div><div class="v" id="caseNextHearing">-</div></div>
+        </div>
+        <div class="section-title gold" style="margin-top:4px;">Case History Timeline</div>
+        <div id="caseTimeline"></div>
+      </div>
+
+      <div class="card">
+        <div class="section-title gold">&#128203; What to Bring to the Next Hearing</div>
+        <div id="attendanceNote" style="font-size:11.5px; color:var(--ink-soft); margin-bottom:12px; padding:8px 10px; background:var(--gold-bg); border-left:3px solid var(--gold); border-radius:4px;"></div>
+        <div id="checklistItems"></div>
+      </div>
+
+      <div class="card chat-card">
+        <div class="chat-header">
+          <div class="chat-avatar">NS</div>
+          <div><div class="chat-title">Nyay Saathi &mdash; न्याय साथी</div><div class="chat-sub">&#9679; online</div></div>
+        </div>
+        <div class="chat-body" id="chatBody">
+          <div class="chat-date-pill">TODAY</div>
+          <div class="chat-bubble">Namaste! Send your case's 16-character CNR number and we will keep you updated on hearing dates automatically.<div class="chat-time">09:00 AM</div></div>
+        </div>
+        <div class="chat-disclosure">&#9888; AI-generated from structured court data. Always verify hearing details with your advocate before travelling.</div>
+        <div class="chat-input-row"><input type="text" placeholder="Type a message..." disabled /></div>
+      </div>
+    </div>
+  </main>
+
+  <div style="max-width:1320px; margin: 0 auto; padding: 0 28px 30px;">
+    <div class="footer-note" id="footerNote">Connecting to backend at localhost:3001...</div>
+  </div>
+</div>
+
+<div id="advocateView" style="display:none; max-width:1320px; margin: 0 auto; padding: 24px 28px 60px;">
+  <div class="adv-select-row">
+    <label>Viewing dashboard for:</label>
+    <select id="advocateSelect" onchange="loadAdvocateDashboard()"></select>
+  </div>
+  <div class="adv-stats-row">
+    <div class="adv-stat-box"><div class="adv-stat-num" id="advTotalCases">-</div><div class="adv-stat-label">Cases tracked</div></div>
+    <div class="adv-stat-box"><div class="adv-stat-num" id="advTotalFamilies">-</div><div class="adv-stat-label">Families subscribed</div></div>
+    <div class="adv-stat-box"><div class="adv-stat-num" id="advTotalSent">-</div><div class="adv-stat-label">Notifications sent</div></div>
+  </div>
+  <div class="card" style="margin-bottom:18px;">
+    <div class="section-title gold">&#128193; My Cases</div>
+    <div id="advCasesList">Loading...</div>
+  </div>
+  <div class="card">
+    <div class="section-title gold">&#9201; Recent Notification Activity</div>
+    <div id="advNotifList">Loading...</div>
+  </div>
+</div>
+
+<script>
+  const API_BASE = 'http://localhost:3001';
+  let activeCNR = null;
+  let tripsPreventedCount = 0;
+  let lastRawText = '';
+  let lastAiText = '';
+
+  function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+  function setPipelineStep(step, state) {
+    document.querySelectorAll('.pipe-step').forEach(el => {
+      if (el.dataset.step === step) el.className = 'pipe-step' + (state ? ' ' + state : '');
+    });
+  }
+  function resetPipeline() {
+    document.querySelectorAll('.pipe-step').forEach(el => el.className = 'pipe-step');
+  }
+
+  function toggleCompare() {
+    const box = document.getElementById('compareBox');
+    const checked = document.getElementById('compareCheckbox').checked;
+    box.classList.toggle('visible', checked);
+  }
+
+  function addWhatsAppMessage(text, direction = 'in') {
+    const body = document.getElementById('chatBody');
+    const bubble = document.createElement('div');
+    bubble.className = 'chat-bubble' + (direction === 'out' ? ' out' : '');
+    const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    bubble.innerHTML = `${text.replace(/\n/g, '<br>')}<div class="chat-time">${timeStr}${direction === 'out' ? ' &check;&check;' : ''}</div>`;
+    body.appendChild(bubble);
+    body.scrollTop = body.scrollHeight;
+  }
+
+  let typingEl = null;
+  function showTyping(show) {
+    const body = document.getElementById('chatBody');
+    if (show) {
+      typingEl = document.createElement('div');
+      typingEl.className = 'chat-typing';
+      typingEl.textContent = 'Nyay Saathi is typing...';
+      body.appendChild(typingEl);
+      body.scrollTop = body.scrollHeight;
+    } else if (typingEl) { typingEl.remove(); typingEl = null; }
+  }
+
+  function switchView(view) {
+    const familyView = document.getElementById('familyView');
+    const advocateView = document.getElementById('advocateView');
+    const familyTab = document.getElementById('familyTab');
+    const advocateTab = document.getElementById('advocateTab');
+    if (view === 'family') {
+      familyView.style.display = 'block';
+      advocateView.style.display = 'none';
+      familyTab.classList.add('active');
+      advocateTab.classList.remove('active');
+    } else {
+      familyView.style.display = 'none';
+      advocateView.style.display = 'block';
+      familyTab.classList.remove('active');
+      advocateTab.classList.add('active');
+      loadAdvocatesList();
+    }
+  }
+
+  async function checkServer() {
+    const pill = document.getElementById('serverPill');
+    const dot = document.getElementById('serverDot');
+    const text = document.getElementById('serverText');
+    try {
+      const res = await fetch(`${API_BASE}/api/health`);
+      const data = await res.json();
+      pill.className = 'server-pill online';
+      dot.className = 'dot';
+      text.textContent = `Backend Online (AI: ${data.aiMode})`;
+      document.getElementById('footerNote').textContent =
+        data.aiMode === 'real'
+          ? 'Connected. AI mode: REAL (using your Gemini key).'
+          : 'Connected. AI mode: DEMO (set GEMINI_API_KEY in backend/.env for real AI text).';
+      return true;
+    } catch (e) {
+      pill.className = 'server-pill offline';
+      dot.className = 'dot offline';
+      text.textContent = 'Backend Offline';
+      document.getElementById('footerNote').textContent = 'Cannot reach backend. Run: cd backend && node server.js';
+      return false;
+    }
+  }
+
+  async function loadCases() {
+    try {
+      const res = await fetch(`${API_BASE}/api/cases`);
+      const cases = await res.json();
+      const grid = document.getElementById('caseGrid');
+      grid.innerHTML = '';
+      cases.forEach(c => {
+        const div = document.createElement('div');
+        div.className = 'case-card' + (c.cnr === activeCNR ? ' active' : '');
+        div.onclick = () => selectCase(c.cnr);
+        div.innerHTML = `<div class="case-cnr">${c.cnr}</div><div class="case-name">${c.name}</div><div class="case-meta">${c.court} &middot; ${c.stage}</div>`;
+        grid.appendChild(div);
+      });
+      if (!activeCNR && cases.length) selectCase(cases[0].cnr);
+    } catch (e) {
+      document.getElementById('caseGrid').innerHTML = '<span style="color:var(--red);font-size:12px;">Could not load cases &mdash; is the backend running?</span>';
+    }
+  }
+
+  async function selectCase(cnr) {
+    activeCNR = cnr;
+    document.getElementById('cnrInput').value = cnr;
+    document.getElementById('checkStatus').textContent = '';
+    document.getElementById('changesWrap').style.display = 'none';
+    resetPipeline();
+    await loadCases();
+    await loadCaseStatus(cnr);
+  }
+
+  async function loadCaseStatus(cnr) {
+    try {
+      const res = await fetch(`${API_BASE}/api/case/${cnr}`);
+      const data = await res.json();
+      document.getElementById('caseAccused').textContent = data.accused_name;
+      document.getElementById('caseCourt').textContent = data.court;
+      document.getElementById('caseStage').textContent = data.current_stage;
+      document.getElementById('caseNextHearing').textContent = `${data.next_hearing_date} (${data.next_hearing_reason})`;
+
+      const timeline = document.getElementById('caseTimeline');
+      timeline.innerHTML = `
+        <div class="timeline-item">
+          <div class="timeline-dot current"></div>
+          <div>
+            <div class="timeline-label">Current Stage</div>
+            <div class="timeline-title">${data.current_stage}</div>
+            <div class="timeline-desc">Next hearing scheduled on: <strong>${data.next_hearing_date}</strong> for ${data.next_hearing_reason}.</div>
+          </div>
+        </div>`;
+      data.history.slice().reverse().forEach(h => {
+        timeline.innerHTML += `
+          <div class="timeline-item">
+            <div class="timeline-dot"></div>
+            <div>
+              <div class="timeline-label">${h.date}</div>
+              <div class="timeline-title">${h.stage}</div>
+              <div class="timeline-desc">${h.note}</div>
+            </div>
+          </div>`;
+      });
+
+      if (data.checklist) {
+        document.getElementById('attendanceNote').textContent = '\u{1F465} ' + data.checklist.attendance;
+        const itemsEl = document.getElementById('checklistItems');
+        itemsEl.innerHTML = data.checklist.documents.map(d => `
+          <div class="checklist-item">
+            <div class="checklist-icon">&check;</div>
+            <div class="checklist-text">
+              <div class="item">${d.item}</div>
+              <div class="reason">${d.reason}</div>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      lastRawText = data.history.length ? data.history[data.history.length - 1].note : '(no prior record)';
+    } catch (e) {
+      console.error('loadCaseStatus failed:', e);
+    }
+  }
+
+  async function handleRegister() {
+    const cnr = document.getElementById('cnrInput').value.trim();
+    const phone = document.getElementById('phoneInput').value.trim();
+    const lang = document.getElementById('langInput').value;
+    const statusEl = document.getElementById('regStatus');
+    const btn = document.getElementById('registerBtn');
+
+    btn.disabled = true;
+    statusEl.className = 'status-line';
+    statusEl.textContent = 'Registering...';
+
+    try {
+      const res = await fetch(`${API_BASE}/api/register`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ cnr, phone, lang })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Registration failed');
+
+      statusEl.className = 'status-line ok';
+      statusEl.textContent = `\u2713 Registered ${phone} successfully.`;
+      addWhatsAppMessage(cnr, 'out');
+      showTyping(true);
+      await sleep(700);
+      showTyping(false);
+      addWhatsAppMessage(data.message, 'in');
+    } catch (err) {
+      statusEl.className = 'status-line error';
+      statusEl.textContent = 'Failed to connect to backend. Make sure node server.js is running!';
+    } finally {
+      btn.disabled = false;
+    }
+  }
+
+  async function handleSimulate() {
+    const cnr = document.getElementById('cnrInput').value.trim();
+    const statusEl = document.getElementById('checkStatus');
+    const btn = document.getElementById('simulateBtn');
+    btn.disabled = true;
+    try {
+      const res = await fetch(`${API_BASE}/api/simulate-change/${cnr}`, { method: 'POST' });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      statusEl.className = 'status-line ok';
+      statusEl.textContent = '\u2713 ' + data.message;
+    } catch (err) {
+      statusEl.className = 'status-line error';
+      statusEl.textContent = 'Could not contact backend.';
+    } finally {
+      btn.disabled = false;
+    }
+  }
+
+  async function handleCheck() {
+    const cnr = document.getElementById('cnrInput').value.trim();
+    const statusEl = document.getElementById('checkStatus');
+    const changesWrap = document.getElementById('changesWrap');
+    const changesList = document.getElementById('changesList');
+    const btn = document.getElementById('checkBtn');
+
+    btn.disabled = true;
+    resetPipeline();
+    changesWrap.style.display = 'none';
+    statusEl.textContent = 'Running check...';
+
+    setPipelineStep('fetch', 'active');
+    await sleep(600);
+    setPipelineStep('fetch', 'done');
+    setPipelineStep('diff', 'active');
+
+    try {
+      const res = await fetch(`${API_BASE}/api/check/${cnr}`, { method: 'POST' });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+
+      await sleep(500);
+      setPipelineStep('diff', 'done');
+
+      if (!data.changed) {
+        statusEl.className = 'status-line ok';
+        statusEl.textContent = 'Completed check: No updates found on eCourts.';
+        resetPipeline();
+        return;
+      }
+
+      changesList.innerHTML = data.changes.map(c => `<li>${c.description}</li>`).join('');
+      changesWrap.style.display = 'block';
+
+      setPipelineStep('ai', 'active');
+      await sleep(800);
+      setPipelineStep('ai', 'done');
+      setPipelineStep('send', 'active');
+      await sleep(500);
+      setPipelineStep('send', 'done');
+
+      await loadCaseStatus(cnr);
+
+      if (data.results && data.results.length) {
+        showTyping(true);
+        await sleep(1200);
+        showTyping(false);
+        addWhatsAppMessage(data.results[0].message, 'in');
+
+        lastAiText = data.results[0].message;
+        document.getElementById('compareRaw').textContent = data.changes.map(c => c.description).join(' ');
+        document.getElementById('compareAi').textContent = lastAiText;
+
+        tripsPreventedCount++;
+        document.getElementById('tripsPreventedNum').textContent = tripsPreventedCount;
+      } else {
+        addWhatsAppMessage('\u26A0 Change detected, but no subscribers are registered for this case yet.', 'in');
+      }
+
+      statusEl.className = 'status-line ok';
+      statusEl.textContent = '\u2713 Check finished. Changes processed and WhatsApp alert delivered.';
+    } catch (err) {
+      statusEl.className = 'status-line error';
+      statusEl.textContent = 'Connection error during check.';
+      resetPipeline();
+    } finally {
+      btn.disabled = false;
+    }
+  }
+
+  async function loadAdvocatesList() {
+    try {
+      const res = await fetch(`${API_BASE}/api/advocates`);
+      const advocates = await res.json();
+      const select = document.getElementById('advocateSelect');
+      if (select.options.length === 0) {
+        select.innerHTML = advocates.map(a => `<option value="${a}">${a}</option>`).join('');
+      }
+      await loadAdvocateDashboard();
+    } catch (e) {
+      document.getElementById('advCasesList').innerHTML = '<span style="color:var(--red);font-size:12px;">Could not load advocates &mdash; is the backend running?</span>';
+    }
+  }
+
+  async function loadAdvocateDashboard() {
+    const advocateName = document.getElementById('advocateSelect').value;
+    if (!advocateName) return;
+    try {
+      const res = await fetch(`${API_BASE}/api/dashboard/${encodeURIComponent(advocateName)}`);
+      const data = await res.json();
+
+      document.getElementById('advTotalCases').textContent = data.totalCases;
+      document.getElementById('advTotalFamilies').textContent = data.totalFamiliesTracking;
+      document.getElementById('advTotalSent').textContent = data.totalNotificationsSent;
+
+      const casesList = document.getElementById('advCasesList');
+      casesList.innerHTML = data.cases.length === 0
+        ? '<span style="font-size:12px;color:var(--ink-soft);">No cases assigned to this advocate.</span>'
+        : data.cases.map(c => `
+          <div class="adv-case-row">
+            <div class="adv-case-info">
+              <div class="name">${c.accused_name} <span style="color:var(--ink-faint);font-weight:400;font-size:10.5px;">&middot; ${c.cnr}</span></div>
+              <div class="meta">${c.court} &middot; ${c.current_stage} &middot; Next: ${c.next_hearing_date}</div>
+            </div>
+            <div class="adv-case-counts">
+              <div class="adv-count"><div class="n">${c.familiesTracking}</div><div class="l">Families</div></div>
+              <div class="adv-count"><div class="n">${c.notificationsSent}</div><div class="l">Sent</div></div>
+            </div>
+          </div>
+        `).join('');
+
+      const notifList = document.getElementById('advNotifList');
+      notifList.innerHTML = data.recentNotifications.length === 0
+        ? '<span style="font-size:12px;color:var(--ink-soft);">No notifications sent yet. Register a family and run a check from Family Portal to see activity here.</span>'
+        : data.recentNotifications.map(n => {
+          const time = new Date(n.timestamp).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' });
+          const badgeLabel = n.trigger === 'registration' ? 'New' : 'Update';
+          return `
+            <div class="notif-row">
+              <div class="notif-badge ${n.trigger}">${badgeLabel}</div>
+              <div>
+                <div class="notif-text">${n.accusedName} (${n.cnr}) &rarr; ${n.phone}</div>
+                <div class="notif-meta">${time} &middot; ${(n.lang || '').toUpperCase()} &middot; ${n.message.slice(0, 70)}${n.message.length > 70 ? '...' : ''}</div>
+              </div>
+            </div>
+          `;
+        }).join('');
+    } catch (e) {
+      console.error('loadAdvocateDashboard failed:', e);
+    }
+  }
+
+  (async () => {
+    const online = await checkServer();
+    if (online) await loadCases();
+  })();
+</script>
+
+</body>
+</html>
