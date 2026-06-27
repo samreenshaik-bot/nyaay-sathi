@@ -318,7 +318,10 @@
 </div>
 
 <script>
-  const API_BASE = 'http://localhost:3001';
+  const DEPLOYED_BACKEND_URL = 'https://nyay-saathi-backend.onrender.com/';
+  const API_BASE = (location.protocol === 'file:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1')
+    ? 'http://localhost:3001'
+    : DEPLOYED_BACKEND_URL;
   let activeCNR = null;
   let tripsPreventedCount = 0;
   let lastRawText = '';
